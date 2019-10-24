@@ -176,7 +176,9 @@ def get_json_from_articles(urls):
             article = Article(url, title, story_text, autor, clearfix, dateTime, dateAkt, photos_videos)
 
             jsons.append(serialise_to_json(article))
-
+            if url == urljoin("https://www.20min.ch/", urls[0]):
+                with open("json_file.json", "w") as f:
+                    json.dump(article, f, default=serialise_to_json, indent=4)
         else:
             stderr.write("Failed to retrieve link : " + url + "\n")
 
@@ -211,11 +213,16 @@ if __name__ == '__main__':
     new_links_count = 0
     links = []
 
+    print("Woring on getting all endpoints..")
     endpoints = get_endpoints_list()
     # ['/schweiz', '/wahlen2019', '/schweiz/zuerich', '/schweiz/bern', '/schweiz/basel', '/schweiz/zentralschweiz', '/schweiz/ostschweiz', '/switzerlanders/stories', '/ausland', '/finance', '/dna', '/bodyundsoul', '/kochenmitfooby', '/kochenmitfooby/rezepte', '/homes', '/sport', '/championsleague', '/europaleague', '/digital', '/digital/e-sport', '/lifestyle', '/wohnen', '/people', '/venty', '/community/viral', '/community/instagram', '/leben/reisen', '/wissen', '/wissen/karriere', '/longform', '/panorama/wettbewerbe', '/motor', '/digital/games', '/herzsex', '/paid-post', '/schweiz/romandie', '/schweiz/news', '/schweiz/tessin', '/wahlen2019/news']
 
+    print("Finished getting endpoints..")
+    print("Working on getting all the pages based on endpoints..")
     pages = get_all_pages(endpoints)
+    print("Done with getting the pages")
 
+    print("Getting all the links for articles..")
     # adding all urls together in one list
     for page in pages:
         new_links = get_links_from_page(page)
@@ -223,9 +230,13 @@ if __name__ == '__main__':
         for l in new_links:
             if l not in links:
                 links.append(l)
-
+    print("Done")
     print("Links: {}, new links total: {}".format(len(links), new_links_count))
 
+    print("Creating JSON records for each article..")
     json_articles = get_json_from_articles(links)
+    print("Done creating the JSON records")
 
+    print("Creating file and gzip file..")
     gzip_data(json_articles)
+    print("Done!")
