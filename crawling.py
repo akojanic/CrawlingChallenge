@@ -4,10 +4,7 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 from contextlib import closing
-
 import json
-import requests
-from django.utils import encoding
 
 from article import Article
 
